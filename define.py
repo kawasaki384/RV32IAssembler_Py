@@ -14,7 +14,7 @@ class instruction_info:
 class label_info:
     def __init__(self):
         self.name:str = 0
-        self.address:c_uint = 0
+        self.address = 0
 
 class row_info:
     def __init__(self):

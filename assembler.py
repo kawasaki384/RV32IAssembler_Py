@@ -1,8 +1,18 @@
 import ctypes
+import sys
+
+#処理に必要なクラスの定義
 import define
+#命令と、それに応じた引数の設定
 import instruction
+#instructionで設定された設定を32bitのbinにする
 import encode
+#x0やraなどを具体的な数値へ変換
 import regs
+#binファイルとして出力
+import export_bin
+#コマンドライン引数の処理
+import commandline_args
 
 def get_file(filename = "untitled.rvi"):
     f = open(filename,'r')
@@ -34,7 +44,7 @@ def trim(rows):
     return return_value
 
 #ラベルの検出、詳細の設定
-def set_label(lines = [str]):
+def set_label(lines:list[str]):
     #ラベルの情報を格納する配列
     labels = []
 
@@ -64,7 +74,7 @@ def set_label(lines = [str]):
 #ラベルだった場合、そのラベルが指し示すアドレスを返す
 #ラベルでなかった場合、-1を返す
 
-def is_this_a_label(string:str,labels = [define.label_info()]):
+def is_this_a_label(string:str,labels:list[define.label_info()]):
     for i in labels:
         if(i.name == string):
             return i.address
@@ -83,16 +93,15 @@ def change_label_to_address(lines,labels):
     return lines
 
 def main():
+    args = sys.argv
+    file_input,file_output,options = commandline_args.getdetail(args)
+
     #ファイルの内容を取得
-    file = get_file()
+    file = get_file(file_input)
     #ファイルの内容のうち、余計なものを削除して分割し2次元配列に
     lines = trim(file)
     #ラベルの内容を設定
     lines,labels = set_label(lines)
-
-
-    #for i in labels:
-    #    print(f"{i.name} address={hex(i.address)}")
 
     #検出したラベルの内容をもとにプログラム中のラベルをアドレスにすべて変換
     lines = change_label_to_address(lines,labels)
@@ -102,10 +111,16 @@ def main():
     #レジスタの情報も取得しておく
     regs.get_defined_regs()
 
+    codes = []
+
     for i in lines:
         info: define.instruction_info = instruction.set_instruction_info(i)
         #instruction.print_instruction_and_operands_info(info)
-        print(hex(encode.getcode(info)))
+        #print(hex(code))
+        code = encode.getcode(info)
+        codes.append(code)
+
+    export_bin.export_bin(codes,file_output)
 
 #エントリポイント
 if __name__ == "__main__":

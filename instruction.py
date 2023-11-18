@@ -15,9 +15,6 @@ def get_defined_instructions(filename = "insts"):
         token = i.split()
         list_insts.append(token)
 
-    #for i in list_insts:
-    #    print(i)
-
     global insts_list
     insts_list = list_insts
 
@@ -79,17 +76,17 @@ def set_instruction_detail(instruction: str):
     return return_value
 
 #lui,auipcだけ
-def set_opr_U(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_U(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rd = regs.change_regs_to_str(operands[0])
     inst_info.imm = operands[1]
 
 #jal一個だけ
-def set_opr_J(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_J(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rd = regs.change_regs_to_str(operands[0])
     inst_info.offset = operands[1]
 
 #load系、op_imm系、その他のjalrに分けられる
-def set_opr_I(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_I(inst_info: define.instruction_info(),operands: list[str]):
     #op_imm系の命令
     if(inst_info.opcode == "0010011"):
         inst_info.rd = regs.change_regs_to_str(operands[0])
@@ -107,33 +104,33 @@ def set_opr_I(inst_info: define.instruction_info(),operands: [str]):
         inst_info.rs1 = regs.change_regs_to_str(operands[1])
         inst_info.offset = operands[2]
 
-def set_opr_B(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_B(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rs1 = regs.change_regs_to_str(operands[0])
     inst_info.rs2 = regs.change_regs_to_str(operands[1])
     inst_info.offset = operands[2]
 
-def set_opr_I5(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_I5(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rd = regs.change_regs_to_str(operands[0])
     inst_info.rs1 = regs.change_regs_to_str(operands[1])
     inst_info.shamt = operands[2]
     
-def set_opr_S(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_S(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rs2 = regs.change_regs_to_str(operands[0])
     #ディスプレースメント付きレジスタ間接指定
     inst_info.offset = get_offset(operands[1])
     inst_info.rs1 = regs.change_regs_to_str(get_register(operands[1]))
 
-def set_opr_B(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_B(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rs1 = regs.change_regs_to_str(operands[0])
     inst_info.rs2 = regs.change_regs_to_str(operands[1])
     inst_info.offset = operands[2]
 
-def set_opr_R(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_R(inst_info: define.instruction_info(),operands: list[str]):
     inst_info.rd = regs.change_regs_to_str(operands[0])
     inst_info.rs1 = regs.change_regs_to_str(operands[1])
     inst_info.rs2 = regs.change_regs_to_str(operands[2])
 
-def set_opr_info(inst_info: define.instruction_info(),operands: [str]):
+def set_opr_info(inst_info: define.instruction_info(),operands: list[str]):
     if(inst_info.type == "U"):
         set_opr_U(inst_info,operands)
     elif(inst_info.type == "J"):
@@ -150,7 +147,7 @@ def set_opr_info(inst_info: define.instruction_info(),operands: [str]):
         set_opr_R(inst_info,operands)
 
 
-def get_inst_and_opr_info(instruction:str,type:str,operands = [str]):
+def get_inst_and_opr_info(instruction:str,type:str,operands: list[str]):
     #instructionのinfoの設定
     inst_info = set_instruction_detail(instruction)
 
@@ -191,7 +188,5 @@ def set_instruction_info(row):
         print(f"命令が存在しません:{instruction}")
     else:
         inst_and_opr = get_inst_and_opr_info(instruction,type,operands)
-
-        #print(f"{type}の命令{instruction}が存在します")
 
     return inst_and_opr
